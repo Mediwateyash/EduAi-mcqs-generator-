@@ -26,6 +26,10 @@ const TakeQuiz = () => {
     const [showStrikeModal, setShowStrikeModal] = useState(false);
     const [strikeReason, setStrikeReason] = useState("");
 
+    // Detect if device is mobile or doesn't support the Fullscreen API (e.g. Safari on iOS)
+    const isMobileOrNoFullscreen = !document.documentElement.requestFullscreen || 
+                                   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
     const timerRef = useRef(null);
 
     useEffect(() => {
@@ -49,7 +53,7 @@ const TakeQuiz = () => {
     }, [quizId, navigate]);
 
     useEffect(() => {
-        if (!isStarted || submitting || isMalpractice) return;
+        if (!isStarted || submitting || isMalpractice || isMobileOrNoFullscreen) return;
 
         const handleVisibilityChange = () => {
             if (document.visibilityState === 'hidden') {
@@ -99,6 +103,11 @@ const TakeQuiz = () => {
     };
 
     const startExamWithProctoring = () => {
+        if (isMobileOrNoFullscreen) {
+            setIsStarted(true);
+            return;
+        }
+
         document.documentElement.requestFullscreen()
             .then(() => {
                 setIsStarted(true);
