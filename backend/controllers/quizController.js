@@ -39,10 +39,16 @@ export const getQuizzes = async (req, res) => {
 
 export const getQuizById = async (req, res) => {
     try {
-        const quiz = await Quiz.findById(req.params.id)
-            .populate('course', 'name')
-            .populate('mcqIds', '-correctAnswer -explanation'); 
-        // Hide correct answer and explanation from the quiz view for safety!
+        let quizQuery = Quiz.findById(req.params.id).populate('course', 'name');
+        
+        // Show correct answers and explanations for teachers and admins, but hide them for students
+        if (req.user.role === 'teacher' || req.user.role === 'admin') {
+            quizQuery = quizQuery.populate('mcqIds');
+        } else {
+            quizQuery = quizQuery.populate('mcqIds', '-correctAnswer -explanation'); 
+        }
+
+        const quiz = await quizQuery;
         if (quiz) {
             res.json(quiz);
         } else {
@@ -54,12 +60,47 @@ export const getQuizById = async (req, res) => {
     }
 };
 
+export const updateQuiz = async (req, res) => {
+    try {
+        const quiz = await Quiz.findById(req.params.id);
+        if (!quiz) return res.status(404).json({ message: 'Quiz not found' });
+
+        const isOwner = quiz.createdBy && quiz.createdBy.toString() === req.user._id.toString();
+        const isAdmin = req.user.role === 'admin';
+        const isTeacher = req.user.role === 'teacher';
+
+        if (!isOwner && !isAdmin && !isTeacher) {
+            return res.status(403).json({ message: 'Not authorized to edit this quiz' });
+        }
+
+        const { title, timer, mcqIds } = req.body;
+
+        if (title !== undefined) quiz.title = title;
+        if (timer !== undefined) quiz.timer = timer;
+        if (mcqIds !== undefined) quiz.mcqIds = mcqIds;
+
+        // Fallback for legacy quizzes missing createdBy property
+        if (!quiz.createdBy) {
+            quiz.createdBy = req.user._id;
+        }
+
+        await quiz.save();
+        res.json(quiz);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 export const deleteQuiz = async (req, res) => {
     try {
         const quiz = await Quiz.findById(req.params.id);
         if (!quiz) return res.status(404).json({ message: 'Quiz not found' });
         
-        if (quiz.createdBy.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+        const isOwner = quiz.createdBy && quiz.createdBy.toString() === req.user._id.toString();
+        const isAdmin = req.user.role === 'admin';
+        const isTeacher = req.user.role === 'teacher';
+
+        if (!isOwner && !isAdmin && !isTeacher) {
             return res.status(403).json({ message: 'Not authorized to delete this quiz' });
         }
 
@@ -69,3 +110,5 @@ export const deleteQuiz = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+

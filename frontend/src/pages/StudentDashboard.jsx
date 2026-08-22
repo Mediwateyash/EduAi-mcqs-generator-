@@ -292,25 +292,41 @@ const StudentDashboard = () => {
                             <div className="p-8 text-center text-gray-500">No quizzes available in this course.</div>
                         ) : (
                             <ul className="divide-y divide-gray-100">
-                                {getQuizzesForCourse(selectedCourse === 'general' ? null : selectedCourse._id).map(quiz => (
-                                    <li key={quiz._id} className="p-6 hover:bg-gray-50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                        <div>
-                                            <h4 className="text-lg font-semibold text-gray-950">{quiz.title}</h4>
-                                            <div className="text-sm text-gray-500 mt-1 flex items-center gap-4">
-                                                <span className="flex items-center gap-1"><Clock className="w-4 h-4"/> {quiz.timer} mins</span>
-                                                <span>• {quiz.mcqIds.length} Questions</span>
+                                {getQuizzesForCourse(selectedCourse === 'general' ? null : selectedCourse._id).map(quiz => {
+                                    const quizAttempts = analytics?.scoresHistory?.filter(sh => sh.quizId === quiz._id) || [];
+                                    const hasAttempted = quizAttempts.length > 0;
+                                    const latestAttempt = hasAttempted ? [...quizAttempts].sort((a, b) => new Date(b.date) - new Date(a.date))[0] : null;
+                                    const latestScore = latestAttempt ? latestAttempt.score : null;
+
+                                    return (
+                                        <li key={quiz._id} className="p-6 hover:bg-gray-50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                            <div>
+                                                <h4 className="text-lg font-semibold text-gray-950">{quiz.title}</h4>
+                                                <div className="text-sm text-gray-500 mt-1 flex flex-wrap items-center gap-4">
+                                                    <span className="flex items-center gap-1"><Clock className="w-4 h-4"/> {quiz.timer} mins</span>
+                                                    <span>• {quiz.mcqIds.length} Questions</span>
+                                                    {hasAttempted && (
+                                                        <span className="inline-flex items-center gap-1 font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded text-xs">
+                                                            Last Score: {latestScore}%
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <Link 
-                                                to={`/student/quiz/${quiz._id}`} 
-                                                className="px-6 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors shadow-sm"
-                                            >
-                                                Attempt Quiz
-                                            </Link>
-                                        </div>
-                                    </li>
-                                ))}
+                                            <div className="flex items-center gap-3">
+                                                <Link 
+                                                    to={`/student/quiz/${quiz._id}`} 
+                                                    className={`px-6 py-2 rounded-lg font-medium transition-colors shadow-sm ${
+                                                        hasAttempted 
+                                                        ? 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200' 
+                                                        : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                                                    }`}
+                                                >
+                                                    {hasAttempted ? 'Reattempt Quiz' : 'Attempt Quiz'}
+                                                </Link>
+                                            </div>
+                                        </li>
+                                    );
+                                })}
                             </ul>
                         )}
                     </div>
