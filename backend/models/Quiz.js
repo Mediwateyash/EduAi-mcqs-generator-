@@ -17,8 +17,13 @@ const quizSchema = new mongoose.Schema({
     timer: {
         type: Number, // duration in minutes
         required: true
+    },
+    course: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course'
     }
 }, { timestamps: true });
+
 
 const Quiz = mongoose.model('Quiz', quizSchema);
 export default Quiz;

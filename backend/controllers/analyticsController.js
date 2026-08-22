@@ -37,10 +37,12 @@ export const getStudentAnalytics = async (req, res) => {
 
         // Data for a chart: scores over time
         const scoresHistory = results.map(r => ({
+            id: r._id,
             quizTitle: r.quizId ? r.quizId.title : 'Deleted Quiz',
             score: r.score,
             date: r.createdAt
         }));
+
 
         res.json({
             totalAttempts,

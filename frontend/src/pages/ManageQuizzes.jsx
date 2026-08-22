@@ -98,6 +98,11 @@ const ManageQuizzes = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredQuizzes.map((quiz) => (
                         <div key={quiz._id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col hover:shadow-md transition-shadow">
+                            {quiz.course && (
+                                <span className="inline-block px-2 py-0.5 text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full mb-2 w-fit uppercase tracking-wider">
+                                    {quiz.course.name}
+                                </span>
+                            )}
                             <div className="flex justify-between items-start mb-4">
                                 <h3 className="text-xl font-bold text-gray-900 line-clamp-2 flex-1">{quiz.title}</h3>
                                 <button 

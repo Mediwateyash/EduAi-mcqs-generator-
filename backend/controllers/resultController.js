@@ -86,10 +86,26 @@ export const getTeacherResults = async (req, res) => {
         const results = await Result.find({ quizId: { $in: quizIds } })
             .populate('studentId', 'name email')
             .populate('quizId', 'title')
-            .sort({ createdAt: -1 });
-
         res.json(results);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
+
+export const deleteResult = async (req, res) => {
+    try {
+        const result = await Result.findById(req.params.id);
+        if (!result) return res.status(404).json({ message: 'Result not found' });
+
+        if (result.studentId.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Not authorized' });
+        }
+
+        await result.deleteOne();
+        res.json({ message: 'Result deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+

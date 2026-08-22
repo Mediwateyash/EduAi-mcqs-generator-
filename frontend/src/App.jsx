@@ -15,6 +15,9 @@ import AdminPanel from './pages/AdminPanel';
 import StudentDashboard from './pages/StudentDashboard';
 import TakeQuiz from './pages/TakeQuiz';
 import QuizResult from './pages/QuizResult';
+import ManageMaterials from './pages/ManageMaterials';
+import ManageCourses from './pages/ManageCourses';
+import CourseDetails from './pages/CourseDetails';
 
 function App() {
   return (
@@ -32,6 +35,25 @@ function App() {
                   <TeacherDashboard />
                 </PrivateRoute>
               } />
+
+              <Route path="/teacher/materials" element={
+                <PrivateRoute allowedRoles={['teacher', 'admin']}>
+                  <ManageMaterials />
+                </PrivateRoute>
+              } />
+
+              <Route path="/teacher/courses" element={
+                <PrivateRoute allowedRoles={['teacher', 'admin']}>
+                  <ManageCourses />
+                </PrivateRoute>
+              } />
+
+              <Route path="/teacher/courses/:id" element={
+                <PrivateRoute allowedRoles={['teacher', 'admin']}>
+                  <CourseDetails />
+                </PrivateRoute>
+              } />
+
               
               <Route path="/teacher/mcqs/:materialId" element={
                 <PrivateRoute allowedRoles={['teacher', 'admin']}>

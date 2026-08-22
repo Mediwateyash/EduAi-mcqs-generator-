@@ -3,7 +3,7 @@ import MCQ from '../models/MCQ.js';
 
 export const createQuiz = async (req, res) => {
     try {
-        const { title, mcqIds, timer } = req.body;
+        const { title, mcqIds, timer, courseId } = req.body;
 
         if (!title || !mcqIds || mcqIds.length === 0 || !timer) {
             return res.status(400).json({ message: 'Please provide title, mcqs, and timer' });
@@ -13,6 +13,7 @@ export const createQuiz = async (req, res) => {
             title,
             mcqIds,
             timer,
+            course: courseId || null,
             createdBy: req.user._id
         });
 
@@ -29,7 +30,7 @@ export const getQuizzes = async (req, res) => {
         if (req.user.role === 'teacher') {
             filter = { createdBy: req.user._id };
         }
-        const quizzes = await Quiz.find(filter).sort({ createdAt: -1 });
+        const quizzes = await Quiz.find(filter).populate('course', 'name').sort({ createdAt: -1 });
         res.json(quizzes);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -38,13 +39,16 @@ export const getQuizzes = async (req, res) => {
 
 export const getQuizById = async (req, res) => {
     try {
-        const quiz = await Quiz.findById(req.params.id).populate('mcqIds', '-correctAnswer -explanation'); 
+        const quiz = await Quiz.findById(req.params.id)
+            .populate('course', 'name')
+            .populate('mcqIds', '-correctAnswer -explanation'); 
         // Hide correct answer and explanation from the quiz view for safety!
         if (quiz) {
             res.json(quiz);
         } else {
             res.status(404).json({ message: 'Quiz not found' });
         }
+
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

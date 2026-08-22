@@ -7,6 +7,8 @@ const CreateQuiz = () => {
     const [materials, setMaterials] = useState([]);
     const [selectedMaterial, setSelectedMaterial] = useState('');
     const [mcqs, setMcqs] = useState([]);
+    const [courses, setCourses] = useState([]);
+    const [selectedCourse, setSelectedCourse] = useState('');
     
     // Form State
     const [title, setTitle] = useState('');
@@ -22,13 +24,26 @@ const CreateQuiz = () => {
                 const res = await axios.get('http://localhost:5000/api/material', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                // only keep completed materials
                 setMaterials(res.data.filter(m => m.status === 'completed'));
             } catch (error) {
                 console.error(error);
             }
         };
+
+        const fetchCourses = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const res = await axios.get('http://localhost:5000/api/course', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setCourses(res.data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
         fetchMaterials();
+        fetchCourses();
     }, []);
 
     useEffect(() => {
@@ -69,7 +84,8 @@ const CreateQuiz = () => {
             await axios.post('http://localhost:5000/api/quiz/create', {
                 title,
                 timer,
-                mcqIds: Array.from(selectedMcqs)
+                mcqIds: Array.from(selectedMcqs),
+                courseId: selectedCourse || null
             }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -92,7 +108,7 @@ const CreateQuiz = () => {
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
                     <h2 className="text-lg font-semibold text-gray-800 border-b border-gray-100 pb-2">Quiz Details</h2>
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Quiz Title</label>
                             <input 
@@ -100,7 +116,7 @@ const CreateQuiz = () => {
                                 type="text" 
                                 value={title}
                                 onChange={e => setTitle(e.target.value)}
-                                className="w-full p-2.5 border border-gray-300 rounded-md focus:ring-primary focus:border-primary shadow-sm"
+                                className="w-full p-2.5 border border-gray-300 rounded-md focus:ring-primary focus:border-primary shadow-sm text-sm"
                                 placeholder="e.g. Midterm History"
                             />
                         </div>
@@ -112,8 +128,21 @@ const CreateQuiz = () => {
                                 min="1"
                                 value={timer}
                                 onChange={e => setTimer(e.target.value)}
-                                className="w-full p-2.5 border border-gray-300 rounded-md focus:ring-primary focus:border-primary shadow-sm"
+                                className="w-full p-2.5 border border-gray-300 rounded-md focus:ring-primary focus:border-primary shadow-sm text-sm"
                             />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Course (Optional)</label>
+                            <select 
+                                value={selectedCourse}
+                                onChange={e => setSelectedCourse(e.target.value)}
+                                className="w-full p-2.5 border border-gray-300 rounded-md focus:ring-primary focus:border-primary shadow-sm text-sm"
+                            >
+                                <option value="">-- General / No Course --</option>
+                                {courses.map(c => (
+                                    <option key={c._id} value={c._id}>{c.name}</option>
+                                ))}
+                            </select>
                         </div>
                     </div>
 
@@ -122,7 +151,7 @@ const CreateQuiz = () => {
                         <select 
                             value={selectedMaterial}
                             onChange={e => setSelectedMaterial(e.target.value)}
-                            className="w-full p-2.5 border border-gray-300 rounded-md focus:ring-primary focus:border-primary shadow-sm"
+                            className="w-full p-2.5 border border-gray-300 rounded-md focus:ring-primary focus:border-primary shadow-sm text-sm"
                         >
                             <option value="">-- Select Processed Material --</option>
                             {materials.map(m => (
@@ -131,6 +160,7 @@ const CreateQuiz = () => {
                         </select>
                     </div>
                 </div>
+
 
                 {mcqs.length > 0 && (
                     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">

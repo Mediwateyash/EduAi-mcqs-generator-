@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import MaterialUpload from '../components/MaterialUpload';
-import MaterialsList from '../components/MaterialsList';
-import { BarChart3, Users, BookOpen, Activity } from 'lucide-react';
+import { BarChart3, Users, BookOpen, Activity, Wand2, ClipboardList, ArrowRight, UploadCloud, GraduationCap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const TeacherDashboard = () => {
-    const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [analytics, setAnalytics] = useState(null);
-
-    const handleUploadSuccess = () => {
-        setRefreshTrigger(prev => prev + 1);
-    };
 
     useEffect(() => {
         const fetchAnalytics = async () => {
@@ -68,22 +61,89 @@ const TeacherDashboard = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-1 space-y-8">
-                    <MaterialUpload onUploadSuccess={handleUploadSuccess} />
-                    
-                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                         <h3 className="text-lg font-semibold mb-4 text-gray-800 flex items-center gap-2">
-                             Quick Links
-                         </h3>
-                         <div className="space-y-2 flex flex-col">
-                             <Link to="/teacher/quizzes" className="text-primary hover:text-indigo-700 font-medium p-2 hover:bg-indigo-50 rounded-md transition-colors">Manage Quizzes</Link>
-                             <Link to="/teacher/results" className="text-primary hover:text-indigo-700 font-medium p-2 hover:bg-indigo-50 rounded-md transition-colors">View All Results</Link>
-                         </div>
+            {/* Dashboard Action Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Card 1: Upload Documents */}
+                <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+                    <div className="space-y-3">
+                        <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl w-fit">
+                            <UploadCloud className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <h3 className="text-md font-bold text-gray-900">Upload & Materials</h3>
+                            <p className="text-xs text-gray-500 mt-1 line-clamp-3">
+                                Upload PDFs, DOCX, or presentation slides. The AI will extract content to generate custom study questions.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="mt-4 flex justify-end">
+                        <Link to="/teacher/materials" className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-sm text-xs w-full justify-center">
+                            Upload Document <ArrowRight className="w-3.5 h-3.5" />
+                        </Link>
                     </div>
                 </div>
-                <div className="lg:col-span-2">
-                    <MaterialsList refreshTrigger={refreshTrigger} />
+
+                {/* Card 2: Manage Courses */}
+                <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+                    <div className="space-y-3">
+                        <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl w-fit">
+                            <GraduationCap className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <h3 className="text-md font-bold text-gray-900">Manage Courses</h3>
+                            <p className="text-xs text-gray-500 mt-1 line-clamp-3">
+                                Create and customize learning categories (e.g. Python Course) to organize your generated quizzes.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="mt-4 flex justify-end">
+                        <Link to="/teacher/courses" className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-colors shadow-sm text-xs w-full justify-center">
+                            Manage Courses <ArrowRight className="w-3.5 h-3.5" />
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Card 3: Generate Quiz */}
+                <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+                    <div className="space-y-3">
+                        <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl w-fit">
+                            <Wand2 className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <h3 className="text-md font-bold text-gray-900">Generate Quiz</h3>
+                            <p className="text-xs text-gray-500 mt-1 line-clamp-3">
+                                Create a new customized quiz from your study materials, select questions, set a timer, and invite students.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="mt-4 flex justify-end">
+                        <Link to="/teacher/quizzes/create" className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-indigo-700 transition-colors shadow-sm text-xs w-full justify-center">
+                            Generate Now <ArrowRight className="w-3.5 h-3.5" />
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Card 4: Manage Quizzes & Results */}
+                <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+                    <div className="space-y-3">
+                        <div className="p-2.5 bg-purple-50 text-purple-600 rounded-xl w-fit">
+                            <ClipboardList className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <h3 className="text-md font-bold text-gray-900">Manage & Results</h3>
+                            <p className="text-xs text-gray-500 mt-1 line-clamp-3">
+                                Monitor student performance, view quiz records, edit active quizzes, and view results.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="mt-4 flex flex-col gap-2">
+                        <Link to="/teacher/quizzes" className="px-3 py-1.5 bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 rounded-lg font-semibold transition-colors text-xs text-center">
+                            Manage Quizzes
+                        </Link>
+                        <Link to="/teacher/results" className="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-lg font-semibold transition-colors text-xs text-center">
+                            View All Results
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>
@@ -91,3 +151,4 @@ const TeacherDashboard = () => {
 };
 
 export default TeacherDashboard;
+
