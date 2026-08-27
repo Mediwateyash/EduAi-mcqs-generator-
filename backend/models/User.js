@@ -23,6 +23,22 @@ const userSchema = new mongoose.Schema({
     isApproved: {
         type: Boolean,
         default: true
+    },
+    showOnLeaderboard: {
+        type: Boolean,
+        default: false
+    },
+    leaderboardPreferenceSet: {
+        type: Boolean,
+        default: false
+    },
+    course: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course'
+    },
+    profileImage: {
+        type: String,
+        default: ''
     }
 }, { timestamps: true });
 

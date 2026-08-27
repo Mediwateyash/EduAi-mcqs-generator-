@@ -18,6 +18,7 @@ import QuizResult from './pages/QuizResult';
 import ManageMaterials from './pages/ManageMaterials';
 import ManageCourses from './pages/ManageCourses';
 import CourseDetails from './pages/CourseDetails';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -100,6 +101,12 @@ function App() {
               <Route path="/student/results/:id" element={
                 <PrivateRoute allowedRoles={['student', 'teacher', 'admin']}>
                   <QuizResult />
+                </PrivateRoute>
+              } />
+
+              <Route path="/profile" element={
+                <PrivateRoute allowedRoles={['student', 'teacher', 'admin']}>
+                  <Profile />
                 </PrivateRoute>
               } />
               

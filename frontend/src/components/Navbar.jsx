@@ -25,10 +25,27 @@ const Navbar = () => {
                     <div className="flex items-center space-x-4">
                         {user ? (
                             <>
-                                <span className="text-gray-700 font-medium flex items-center gap-1.5 hidden sm:flex">
-                                    <UserIcon className="w-4 h-4" />
-                                    {user.name} ({user.role})
-                                </span>
+                                <Link 
+                                    to="/profile" 
+                                    className="text-gray-750 hover:text-indigo-600 font-semibold flex items-center gap-2 transition-colors duration-200 hidden sm:flex py-1.5 px-3 hover:bg-slate-50 rounded-xl"
+                                    title="View / Edit Profile"
+                                >
+                                    {user.profileImage ? (
+                                        <img 
+                                            src={user.profileImage} 
+                                            alt="Profile" 
+                                            className="w-7 h-7 rounded-full object-cover border border-slate-200 shadow-sm" 
+                                        />
+                                    ) : (
+                                        <div className="w-7 h-7 rounded-full bg-indigo-50 text-indigo-700 flex items-center justify-center text-[11px] font-bold border border-indigo-100 uppercase">
+                                            {user.name ? user.name[0] : 'U'}
+                                        </div>
+                                    )}
+                                    <span>{user.name}</span>
+                                    <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-bold uppercase tracking-wide">
+                                        {user.role}
+                                    </span>
+                                </Link>
                                 {(user.role === 'teacher' || user.role === 'admin') && (
                                     <Link to="/teacher" className="text-gray-600 hover:text-primary font-medium">Teacher</Link>
                                 )}
